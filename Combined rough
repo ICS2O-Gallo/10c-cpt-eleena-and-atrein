@@ -1,4 +1,6 @@
 import arcade
+import random
+import math
 
 WIDTH = 640
 HEIGHT = 480
@@ -16,11 +18,9 @@ ship_l = [100]
 
 ship_img = arcade.load_texture('images/space_ship.jpg')
 
-current_screen = "menu"
 
-
-
-
+player_health = 100
+player_max_health = 100
 
 
 
@@ -78,12 +78,36 @@ def setup():
 
 
 def update(delta_time):
-    pass
+    global player_y
+    if up_pressed == True:
+        player_y += 10
+    if down_pressed == True:
+        player_y -= 10
+    global player_x
+    if left_pressed == True:
+        player_x -= 10
+    if right_pressed == True:
+        player_x += 10
+    for index in range(len(rain_y_pos)):
+        rain_y_pos[index] -= 6
+
+        if rain_y_pos[index] < 0:
+            rain_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
+            rain_x_pos[index] = random.randrange(0, WIDTH)
+
+    a = rain_radius[0] - ship_w[0]
+    b = rain_radius[0] - ship_l[0]
+    dist = math.sqrt(a ** 2 + b ** 2)
+
+    if dist < rain_radius[0] + ship_w[0]:
+        current_screen == "End"
 
 
 def on_draw():
     arcade.start_render()
     global current_screen
+    global player_x, player_y
+    arcade.start_render()
     # Draw in here...
 
     if button2[BTN_2_IS_CLICKED]:
@@ -133,34 +157,83 @@ def on_draw():
         arcade.set_background_color(arcade.color.BLACK)
         arcade.draw_text("GAME OVER", x, y, arcade.color.WHITE, 50, 10, "center", "Veneer", True, False)
 
-    elif current_screen == "Game":
-        arcade.draw_texture_rectangle(player_x, player_y, ship_w[0],ship_l[0] , ship_img)
+
+
+    elif current_screen == "game":
+
+        arcade.draw_texture_rectangle(player_x, player_y, ship_w[0], ship_l[0], ship_img)
         for x, y in zip(rain_x_pos, rain_y_pos):
             arcade.draw_circle_filled(x, y, rain_radius[0], arcade.color.YELLOW)
+        max_bar_width = 170
+        bar_height = 40
+        arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width,
+                                          HEIGHT - bar_height,
+                                          max_bar_width,
+                                          bar_height,
+                                          arcade.color.BLACK)
+
+        health_width = player_health / player_max_health * max_bar_width
+        arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width,
+                                          HEIGHT - bar_height,
+                                          health_width,
+                                          bar_height,
+                                          arcade.color.APPLE_GREEN)
+
+        arcade.draw_text(f"{player_health}/{player_max_health}",
+                         WIDTH - max_bar_width,
+                         HEIGHT - bar_height,
+                         arcade.color.WHITE,
+                         font_size=25)
 
 
 
 def on_key_press(key, ):
-    pass
+    global current_screen
+    global up_pressed
+    if key == arcade.key.W:
+        up_pressed = True
+    global down_pressed
+    if key == arcade.key.S:
+        down_pressed = True
+    global left_pressed
+    if key == arcade.key.A:
+        left_pressed = True
+    global right_pressed
+    if key == arcade.key.D:
+        right_pressed = True
 
 
 def on_key_release(key, modifiers):
-    pass
+    global current_screen
+    global up_pressed
+    if key == arcade.key.W:
+        up_pressed = False
+    global down_pressed
+    if key == arcade.key.S:
+        down_pressed = False
+    global left_pressed
+    if key == arcade.key.A:
+        left_pressed = False
+    global right_pressed
+    if key == arcade.key.D:
+        right_pressed = False
 
 
 def on_mouse_press(x, y, button, modifiers):
     global current_screen
 
     if current_screen == "menu screen":
-        if x > 257 and x < 383 and y > 230 and y < 270:
-            print("button clicked")
+        if x > 257 and x < 383 and y > 305 and y < 345:
             current_screen = "game"
-        elif x > 257 and x < 383 and y > 305 and y < 345:
-            print("button clicked")
+        if x > 257 and x < 383 and y > 230 and y < 270:
+            print ("instructions")
+
 
 
 def on_mouse_release(x, y, button, modifiers):
-    button2[BTN_IS_CLICKED] = False
+    global current_screen
+    button2[BTN_2_IS_CLICKED] = False
+    button3[BTN_3_IS_CLICKED] = False
 
 
 if __name__ == '__main__':
