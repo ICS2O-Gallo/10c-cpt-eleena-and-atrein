@@ -13,6 +13,7 @@ player_y = HEIGHT/2
 rain_x_pos = [100, 200, 300, 400, 350]
 rain_y_pos = [480, 480, 480, 480, 480]
 rain_radius = [25]
+
 ship_w = [125]
 ship_l = [100]
 
@@ -22,21 +23,10 @@ ship_img = arcade.load_texture('images/space_ship.jpg')
 player_health = 100
 player_max_health = 100
 
-
-
 up_pressed = False
 down_pressed = False
 left_pressed = False
 right_pressed = False
-
-
-BTN_X = 0
-BTN_Y = 1
-BTN_WIDTH = 2
-BTN_HEIGHT = 3
-BTN_IS_CLICKED = 4
-BTN_COLOR = 5
-BTN_COLOR_CLICKED = 6
 
 BTN_2_X = 0
 BTN_2_Y = 1
@@ -54,7 +44,7 @@ BTN_3_IS_CLICKED = 4
 BTN_3_COLOR = 5
 BTN_3_COLOR_CLICKED = 6
 
-current_screen = "menu screen"
+current_screen = "menu"
 
 button2 = [WIDTH / 2, 250, 125, 40, False, arcade.color.PURPLE, arcade.color.ELECTRIC_CRIMSON]
 
@@ -78,6 +68,8 @@ def setup():
 
 
 def update(delta_time):
+    global player_health
+    global current_screen
     global player_y
     if up_pressed == True:
         player_y += 10
@@ -102,6 +94,12 @@ def update(delta_time):
     if dist < rain_radius[0] + ship_w[0]:
         current_screen == "End"
 
+    if ship_w == rain_x_pos and ship_l == rain_y_pos:
+        player_health -= 25
+
+    if player_health == 0:
+        current_screen = "End"
+
 
 def on_draw():
     arcade.start_render()
@@ -110,42 +108,34 @@ def on_draw():
     arcade.start_render()
     # Draw in here...
 
-    if button2[BTN_2_IS_CLICKED]:
-        color = button2[BTN_2_COLOR_CLICKED]
-    else:
-        color = button2[BTN_2_COLOR]
-
-    if button3[BTN_3_IS_CLICKED]:
-        color = button3[BTN_3_COLOR_CLICKED]
-    else:
-        color = button3[BTN_3_COLOR]
-
-    arcade.draw_rectangle_filled(button2[BTN_2_X],
-                                 button2[BTN_2_Y],
-                                 button2[BTN_2_WIDTH],
-                                 button2[BTN_2_HEIGHT],
-                                 button2[BTN_2_COLOR])
-    arcade.draw_rectangle_filled(button3[BTN_3_X],
-                                 button3[BTN_3_Y],
-                                 button3[BTN_3_WIDTH],
-                                 button3[BTN_3_HEIGHT],
-                                 button3[BTN_3_COLOR])
-    arcade.draw_text("INSTRUCTIONS", 260, 245, arcade.color.BLACK, 13)
-    arcade.draw_text("START", 275, 315, arcade.color.BLACK, 20)
-    arcade.draw_text("READY, SET, LIFTOFF!", 95, 400, arcade.color.WHITE, 35)
-    arcade.draw_circle_filled(30, 49, 2, arcade.color.WHITE)
     x = 180
     y = 325
 
     if current_screen == "menu":
-        arcade.set_background_color(arcade.color.GRAY)
-        arcade.draw_text("Ready", x, y, arcade.color.RED_DEVIL, 50, 10, "center", "Veneer", True, False,)
-        arcade.draw_text("Set", x + 40, y - 35, arcade.color.BLACK, 25, 200, "center")
-        arcade.draw_text("Lift Off", x + 25, y - 90, arcade.color.WHITE, 40, WIDTH/2, "center", "Veneer", True, False,)
-        arcade.draw_rectangle_filled(WIDTH/2, 175, 200, 50, arcade.color.LIGHT_GRAY)
-        arcade.draw_rectangle_filled(WIDTH / 2, 100, 200, 50, arcade.color.LIGHT_GRAY)
-        arcade.draw_text("PLAY GAME", 225, 165, arcade.color.BLACK, 25, 200)
-        arcade.draw_text("INSTRUCTIONS", 225, 90, arcade.color.BLACK, 19, 200)
+        if button2[BTN_2_IS_CLICKED]:
+            color = button2[BTN_2_COLOR_CLICKED]
+        else:
+            color = button2[BTN_2_COLOR]
+
+        if button3[BTN_3_IS_CLICKED]:
+            color = button3[BTN_3_COLOR_CLICKED]
+        else:
+            color = button3[BTN_3_COLOR]
+
+        arcade.draw_rectangle_filled(button2[BTN_2_X],
+                                     button2[BTN_2_Y],
+                                     button2[BTN_2_WIDTH],
+                                     button2[BTN_2_HEIGHT],
+                                     button2[BTN_2_COLOR])
+        arcade.draw_rectangle_filled(button3[BTN_3_X],
+                                     button3[BTN_3_Y],
+                                     button3[BTN_3_WIDTH],
+                                     button3[BTN_3_HEIGHT],
+                                     button3[BTN_3_COLOR])
+        arcade.draw_text("INSTRUCTIONS", 260, 245, arcade.color.BLACK, 13, 10, "center", 'Calibri', True, False)
+        arcade.draw_text("START", 275, 315, arcade.color.BLACK, 20, 15, "center", 'Calibri', True, False)
+        arcade.draw_text("READY, SET, LIFTOFF!", 95, 400, arcade.color.WHITE, 35)
+
 
     elif current_screen == "instructions":
         arcade.set_background_color(arcade.color.BLACK)
@@ -186,47 +176,49 @@ def on_draw():
                          font_size=25)
 
 
-
-def on_key_press(key, ):
+def on_key_press(key, modifiers):
     global current_screen
-    global up_pressed
-    if key == arcade.key.W:
-        up_pressed = True
-    global down_pressed
-    if key == arcade.key.S:
-        down_pressed = True
-    global left_pressed
-    if key == arcade.key.A:
-        left_pressed = True
-    global right_pressed
-    if key == arcade.key.D:
-        right_pressed = True
+
+    if current_screen == "game":
+        global up_pressed
+        if key == arcade.key.W:
+            up_pressed = True
+        global down_pressed
+        if key == arcade.key.S:
+            down_pressed = True
+        global left_pressed
+        if key == arcade.key.A:
+            left_pressed = True
+        global right_pressed
+        if key == arcade.key.D:
+            right_pressed = True
 
 
 def on_key_release(key, modifiers):
     global current_screen
-    global up_pressed
-    if key == arcade.key.W:
-        up_pressed = False
-    global down_pressed
-    if key == arcade.key.S:
-        down_pressed = False
-    global left_pressed
-    if key == arcade.key.A:
-        left_pressed = False
-    global right_pressed
-    if key == arcade.key.D:
-        right_pressed = False
+    if current_screen == "game":
+        global up_pressed
+        if key == arcade.key.W:
+            up_pressed = False
+        global down_pressed
+        if key == arcade.key.S:
+            down_pressed = False
+        global left_pressed
+        if key == arcade.key.A:
+            left_pressed = False
+        global right_pressed
+        if key == arcade.key.D:
+            right_pressed = False
 
 
 def on_mouse_press(x, y, button, modifiers):
     global current_screen
 
-    if current_screen == "menu screen":
+    if current_screen == "menu":
         if x > 257 and x < 383 and y > 305 and y < 345:
             current_screen = "game"
         if x > 257 and x < 383 and y > 230 and y < 270:
-            print ("instructions")
+            current_screen = "instructions"
 
 
 
