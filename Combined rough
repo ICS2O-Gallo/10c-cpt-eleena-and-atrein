@@ -12,12 +12,13 @@ player_y = HEIGHT/2
 
 rain_x_pos = [100, 200, 300, 400, 350]
 rain_y_pos = [480, 480, 480, 480, 480]
-rain_radius = [25]
+rain_radius = [50]
 
 ship_w = [125]
 ship_l = [100]
 
-ship_img = arcade.load_texture('images/space_ship.jpg')
+ship_img = arcade.load_texture('images/officialrocket.png')
+ast_img = arcade.load_texture('images/ast.png')
 
 
 player_health = 100
@@ -71,6 +72,10 @@ def update(delta_time):
     global player_health
     global current_screen
     global player_y
+    global up_pressed
+    global down_pressed
+    global left_pressed
+    global right_pressed
     if up_pressed == True:
         player_y += 10
     if down_pressed == True:
@@ -99,6 +104,20 @@ def update(delta_time):
 
     if player_health == 0:
         current_screen = "End"
+
+    if player_y >= 480:
+        up_pressed = False
+
+    if player_y <=0:
+        down_pressed = False
+
+    if player_x <=0:
+        left_pressed = False
+
+    if player_x >= 635:
+        right_pressed = False
+
+
 
 
 def on_draw():
@@ -153,7 +172,7 @@ def on_draw():
 
         arcade.draw_texture_rectangle(player_x, player_y, ship_w[0], ship_l[0], ship_img)
         for x, y in zip(rain_x_pos, rain_y_pos):
-            arcade.draw_circle_filled(x, y, rain_radius[0], arcade.color.YELLOW)
+            arcade.draw_texture_rectangle(x, y, rain_radius[0], 50,  ast_img)
         max_bar_width = 170
         bar_height = 40
         arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width,
