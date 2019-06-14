@@ -5,7 +5,6 @@ import math
 WIDTH = 640
 HEIGHT = 480
 
-# data map
 
 player_x = WIDTH/2
 player_y = HEIGHT/2
@@ -19,7 +18,7 @@ ship_l = [100]
 
 ship_img = arcade.load_texture('images/officialrocket.png')
 ast_img = arcade.load_texture('images/ast.png')
-game_background = arcade.load_texture('images/stars.png')
+
 
 
 player_health = 100
@@ -104,16 +103,18 @@ def update(delta_time):
     b = rain_radius[0] - ship_l[0]
     dist = math.sqrt(a ** 2 + b ** 2)
 
-    if dist < rain_radius[0] + ship_w[0]:
-        current_screen == "End"
+    #if dist < rain_radius + ship_w:
+        #current_screen == "End"
 
     if ship_w == rain_x_pos and ship_l == rain_y_pos:
         player_health -= 25
 
-    # for rain_x_pos in rain_y_pos:
-        #if rain_x_pos[0] in range(ship_l, ship_l + 20) and rain_x_pos[1] in range(ship_w - 20, ship_w + 50) \
-              #  and current_screen == 'Game':
-           # player_health -= 25
+    if ship_w + ship_l == rain_x_pos + rain_y_pos:
+        print ("collision")
+
+    #for rain_x_pos in rain_y_pos :
+        #if rain_x_pos[0] in range(ship_l, ship_l + 20) and rain_x_pos[1] in range(ship_w - 20, ship_w + 50) and current_screen == 'Game':
+         #  player_health -= 25
 
     if player_health == 0:
         player_alive = False
@@ -173,20 +174,20 @@ def on_draw():
         arcade.draw_text("READY, SET, LIFTOFF!", 95, 400, arcade.color.WHITE, 35)
 
 
+
     elif current_screen == "instructions":
         arcade.set_background_color(arcade.color.BLACK)
         arcade.draw_text("INSTRUCTIONS", 40, 375, arcade.color.WHITE, 50, 200, "left", "Calibri", True, False)
         arcade.draw_line(40, 360, 600, 360, arcade.color.WHITE, 10)
-        arcade.draw_text("IN this game, you will be using the keys W to move up, S to move down, A to move left and D to move Right", 60, 320, arcade.color.WHITE, 15, 250, "left", "arial", False, False)
-
+        arcade.draw_text("IN this game, you will be using the keys W to move up, S to move down, A to move left and D to move Right", 60, 320, arcade.color.WHITE, 15, 300, "left", "arial", False, False)
+        arcade.draw_text("Press M to return to Menu", 40, 210, arcade.color.WHITE, 14, 300, "center", "Veneer", True, False)
     elif current_screen == "End":
         arcade.set_background_color(arcade.color.BLACK)
-        arcade.draw_text("GAME OVER", x, y, arcade.color.WHITE, 50, 10, "center", "Veneer", True, False)
-
+        arcade.draw_text("GAME OVER", 40, 375, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
+        arcade.draw_text("Press ESC to return to Main Menu", 60, 210, arcade.color.WHITE, 15, 500, "center", "Veneer", True, False)
 
 
     elif current_screen == "game":
-        arcade.draw_texture_rectangle(x, y, 1300, 645, game_background)
         arcade.set_background_color(arcade.color.BLACK)
         arcade.draw_texture_rectangle(player_x, player_y, ship_w[0], ship_l[0], ship_img)
         for x, y in zip(rain_x_pos, rain_y_pos):
@@ -218,6 +219,9 @@ def on_key_press(key, modifiers):
 
     if current_screen == "instructions":
         if key == arcade.key.M:
+            current_screen = "menu"
+    if current_screen == "End":
+        if key == arcade.key.ESCAPE:
             current_screen = "menu"
 
     if current_screen == "game":
