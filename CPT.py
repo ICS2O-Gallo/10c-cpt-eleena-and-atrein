@@ -5,29 +5,79 @@ import math
 WIDTH = 640
 HEIGHT = 480
 
-# data map
+# player variables
 
 player_x = WIDTH/2
 player_y = HEIGHT/2
 
-rain_x_pos = [100, 200, 300, 400, 350]
-rain_y_pos = [480, 480, 480, 480, 480]
-rain_radius = [25]
-
-ship_w = [125]
+ship_w = [60]
 ship_l = [100]
 
+# asteroid variables
+ast_x_pos = [100, 200, 300, 400, 350]
+ast_y_pos = [480, 480, 480, 480, 480]
+ast_radius = [50]
+
+# Big Asteroids
+ast_big_x_pos = [200, 300]
+ast_big_y_pos = [480, 480]
+
+timer = 0
+current_score = 0
+high_score = 0
+
+
+# Images
 ship_img = arcade.load_texture('images/officialrocket.png')
-asteroid_img = arcade.load_texture('images/asteroid.png')
+ast_img = arcade.load_texture('images/ast.png')
+game_background = arcade.load_texture('images/stars.png')
+W_key_img = arcade.load_texture('images/W_key.png')
+A_key_img = arcade.load_texture('images/A_key.png')
+S_key_img = arcade.load_texture('images/S_key.png')
+D_key_img = arcade.load_texture('images/D_key.png')
+pause_img = arcade.load_texture('images/pause.png')
 
 
 player_health = 100
 player_max_health = 100
+player_alive = True
 
 up_pressed = False
 down_pressed = False
 left_pressed = False
 right_pressed = False
+
+BTN_pause_X = 0
+BTN_pause_Y = 1
+BTN_pause_WIDTH = 2
+BTN_pause_HEIGHT = 3
+BTN_pause_IS_CLICKED = 4
+BTN_pause_COLOR = 5
+BTN_pause_COLOR_CLICKED = 6
+
+BTN_pause_screen_X = 0
+BTN_pause_screen_Y = 1
+BTN_pause_screen_WIDTH = 2
+BTN_pause_screen_HEIGHT = 3
+BTN_pause_screen_IS_CLICKED = 4
+BTN_pause_screen_COLOR = 5
+BTN_pause_screen_COLOR_CLICKED = 6
+
+BTN_end_X = 0
+BTN_end_Y = 1
+BTN_end_WIDTH = 2
+BTN_end_HEIGHT = 3
+BTN_end_IS_CLICKED = 4
+BTN_end_COLOR = 5
+BTN_end_COLOR_CLICKED = 6
+
+BTN_menu_X = 0
+BTN_menu_Y = 1
+BTN_menu_WIDTH = 2
+BTN_menu_HEIGHT = 3
+BTN_menu_IS_CLICKED = 4
+BTN_menu_COLOR = 5
+BTN_menu_COLOR_CLICKED = 6
 
 BTN_2_X = 0
 BTN_2_Y = 1
@@ -46,6 +96,14 @@ BTN_3_COLOR = 5
 BTN_3_COLOR_CLICKED = 6
 
 current_screen = "menu"
+
+button_pause = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
+
+button_pause_screen = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
+
+button_end = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
+
+button_menu = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
 
 button2 = [WIDTH / 2, 250, 125, 40, False, arcade.color.PURPLE, arcade.color.ELECTRIC_CRIMSON]
 
@@ -69,13 +127,14 @@ def setup():
 
 
 def update(delta_time):
-    global player_health
+    global player_health, player_y, player_x, player_alive
     global current_screen
-    global player_y
-    global up_pressed
-    global down_pressed
-    global left_pressed
-    global right_pressed
+    global up_pressed, down_pressed, left_pressed, right_pressed
+    global ast_x_pos, ast_y_pos, ast_radius
+    global ship_l, ship_w
+    global ast_big_y_pos, ast_big_x_pos
+    global timer
+
     if up_pressed == True:
         player_y += 10
     if down_pressed == True:
@@ -85,45 +144,85 @@ def update(delta_time):
         player_x -= 10
     if right_pressed == True:
         player_x += 10
-    for index in range(len(rain_y_pos)):
-        rain_y_pos[index] -= 6
 
-        if rain_y_pos[index] < 0:
-            rain_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
-            rain_x_pos[index] = random.randrange(0, WIDTH)
+    for index in range(len(ast_y_pos)):
+        ast_y_pos[index] -= 6
 
-    a = rain_radius[0] - ship_w[0]
-    b = rain_radius[0] - ship_l[0]
-    dist = math.sqrt(a ** 2 + b ** 2)
+        if ast_y_pos[index] < 0:
+            ast_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
+            ast_x_pos[index] = random.randrange(0, WIDTH)
 
-    if dist < rain_radius[0] + ship_w[0]:
-        current_screen == "End"
+    for index in range(len(ast_big_y_pos)):
+        ast_big_y_pos[index] -= 2
 
-    if ship_w == rain_x_pos and ship_l == rain_y_pos:
-        player_health -= 25
+        if ast_big_y_pos[index] < 0:
+            ast_big_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
+            ast_big_x_pos[index] = random.randrange(0, WIDTH)
+
+    for i, (x, y) in enumerate(zip(ast_x_pos, ast_y_pos)):
+        a = x - player_x
+        b = y - player_y
+        distance = math.sqrt(a ** 2 + b ** 2)
+
+        if distance - 30 - 70 <= 0 and current_screen == "game":
+            player_health -= 25
+            del ast_x_pos[i]
+            del ast_y_pos[i]
+
+    for i, (x, y) in enumerate(zip(ast_big_x_pos, ast_big_y_pos)):
+        a = x - player_x
+        b = y - player_y
+        distance = math.sqrt(a ** 2 + b ** 2)
+
+        if distance - 30 - 30 <= 0 and current_screen == "game":
+            player_health -= 25
+            del ast_big_x_pos[i]
+            del ast_big_y_pos[i]
+
+
+    if current_screen == "game":
+        timer += 0.5
+
+    elif current_screen == "menu":
+        timer += 0
+
+    elif current_screen == "instructions":
+        timer += 0
+
+    elif current_screen == "End":
+        timer += 0
+
+    elif current_screen == "pause":
+        timer += 0
+
 
     if player_health == 0:
+        player_alive = False
+
+    if player_alive == False:
         current_screen = "End"
+
+    # The boundaries
 
     if player_y >= 480:
         up_pressed = False
 
-    if player_y <=0:
+    if player_y <= 0:
         down_pressed = False
 
-    if player_x <=0:
+    if player_x <= 0:
         left_pressed = False
 
     if player_x >= 635:
         right_pressed = False
 
 
-
-
 def on_draw():
     arcade.start_render()
     global current_screen
-    global player_x, player_y
+    global player_x, player_y, ast_big_y_pos, ast_big_x_pos, ast_x_pos, ast_y_pos
+    global player_alive, player_health
+    global timer
     arcade.start_render()
     # Draw in here...
 
@@ -131,6 +230,7 @@ def on_draw():
     y = 325
 
     if current_screen == "menu":
+        arcade.set_background_color(arcade.color.SPACE_CADET)
         if button2[BTN_2_IS_CLICKED]:
             color = button2[BTN_2_COLOR_CLICKED]
         else:
@@ -141,64 +241,119 @@ def on_draw():
         else:
             color = button3[BTN_3_COLOR]
 
-        arcade.draw_rectangle_filled(button2[BTN_2_X],
-                                     button2[BTN_2_Y],
-                                     button2[BTN_2_WIDTH],
-                                     button2[BTN_2_HEIGHT],
-                                     button2[BTN_2_COLOR])
-        arcade.draw_rectangle_filled(button3[BTN_3_X],
-                                     button3[BTN_3_Y],
-                                     button3[BTN_3_WIDTH],
-                                     button3[BTN_3_HEIGHT],
-                                     button3[BTN_3_COLOR])
-        arcade.draw_text("INSTRUCTIONS", 260, 245, arcade.color.BLACK, 13, 10, "center", 'Calibri', True, False)
-        arcade.draw_text("START", 275, 315, arcade.color.BLACK, 20, 15, "center", 'Calibri', True, False)
+        arcade.draw_rectangle_filled(button2[BTN_2_X], button2[BTN_2_Y], 150, button2[BTN_2_HEIGHT], arcade.color.EARTH_YELLOW)
+        arcade.draw_rectangle_filled(button3[BTN_3_X], button3[BTN_3_Y], button3[BTN_3_WIDTH], button3[BTN_3_HEIGHT], arcade.color.YELLOW)
+        arcade.draw_text("INSTRUCTIONS", 170, 245, arcade.color.BLACK, 16, 300, "center", 'arial', True, False)
+        arcade.draw_text("START", 165, 310, arcade.color.BLACK, 25, 300, "center", 'arial', True, False)
         arcade.draw_text("READY, SET, LIFTOFF!", 95, 400, arcade.color.WHITE, 35)
 
 
     elif current_screen == "instructions":
-        arcade.set_background_color(arcade.color.BLACK)
-        arcade.draw_text("INSTRUCTIONS", 40, 375, arcade.color.WHITE, 50, 200, "left", "Calibri", True, False)
-        arcade.draw_line(40, 360, 600, 360, arcade.color.WHITE, 10)
-        arcade.draw_text("IN this game, you will be using the keys W to move up, S to move down, A to move left and D to move Right",  60, 320, arcade.color.WHITE, 15, 250, "left", "arial", False, False)
+        arcade.set_background_color(arcade.color.COOL_BLACK)
+        player_alive = True
+        arcade.draw_text("INSTRUCTIONS", 230, 400, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
+        arcade.draw_line(120, 390, 500, 390, arcade.color.WHITE, 10)
+        arcade.draw_texture_rectangle(320, 250, 60, 60, W_key_img)
+        arcade.draw_texture_rectangle(320, 180, 60, 60, S_key_img)
+        arcade.draw_texture_rectangle(250, 180, 60, 60, A_key_img)
+        arcade.draw_texture_rectangle(390, 180, 60, 60, D_key_img)
+        arcade.draw_text("UP", 305, 290, arcade.color.WHITE, 30, 150, "left", 'arial', True, False)
+        arcade.draw_text("DOWN", 300, 110, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
+        arcade.draw_text("LEFT", 170, 160, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
+        arcade.draw_text("RIGHT", 430, 160, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
+        #arcade.draw_text("IN this game, you will be using the keys W to move up, S to move down, A to move left and D to move Right", 60, 320, arcade.color.WHITE, 15, 300, "left", "arial", False, False)
+        arcade.draw_text("Press M to return to Menu", 8, 340, arcade.color.WHITE, 14, 300, "center", "Veneer", True, False)
 
-    elif current_screen == "End":
+
+    elif current_screen == "pause":
         arcade.set_background_color(arcade.color.BLACK)
-        arcade.draw_text("GAME OVER", x, y, arcade.color.WHITE, 50, 10, "center", "Veneer", True, False)
+        arcade.draw_text("PAUSE", 40, 375, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
+        arcade.draw_line(40, 360, 600, 360, arcade.color.WHITE, 10)
+        if button_pause_screen[BTN_pause_screen_IS_CLICKED]:
+            color = button_pause_screen[BTN_pause_screen_COLOR_CLICKED]
+        else:
+            color = button_pause_screen[BTN_pause_screen_COLOR]
+
+        if button_menu[BTN_menu_IS_CLICKED]:
+            color = button_menu[BTN_menu_COLOR_CLICKED]
+        else:
+            color = button_menu[BTN_menu_COLOR]
+
+        arcade.draw_rectangle_filled(320, 240, 126, 40, arcade.color.EARTH_YELLOW)
+        arcade.draw_rectangle_filled(320, 180, 126, 40, arcade.color.GREEN)
+        arcade.draw_text("Resume", 170, 225, arcade.color.BLACK, 28, 300, "center", 'arial', True, False)
+        arcade.draw_text("Main Menu", 170, 165, arcade.color.BLACK, 20, 300, "center", 'arial', True, False)
+        arcade.draw_text(f"Current Score: {timer}", 170, 120, arcade.color.WHITE, 18, 300, "center", 'arial', True, False)
 
 
 
     elif current_screen == "game":
-
+        arcade.draw_texture_rectangle(x, y, 1300, 645, game_background)
+        arcade.set_background_color(arcade.color.WHITE)
+        pause_screen()
         arcade.draw_texture_rectangle(player_x, player_y, ship_w[0], ship_l[0], ship_img)
-        for x, y in zip(rain_x_pos, rain_y_pos):
-            arcade.draw_circle_filled(x, y, rain_radius[0], asteroid_img)
+        arcade.draw_text(f"SCORE: {timer}", 70, 450, arcade.color.WHITE, 12, 300, "left", "", True)
+        for x, y in zip(ast_x_pos, ast_y_pos):
+            arcade.draw_texture_rectangle(x, y, ast_radius[0], 40,  ast_img)
+        for x, y in zip(ast_big_x_pos, ast_big_y_pos):
+            arcade.draw_texture_rectangle(x, y, ast_radius[0], 80, ast_img)
         max_bar_width = 170
         bar_height = 40
-        arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width,
-                                          HEIGHT - bar_height,
-                                          max_bar_width,
-                                          bar_height,
-                                          arcade.color.BLACK)
+        health_pos_x = WIDTH - max_bar_width
+        health_pos_y = HEIGHT - bar_height
+
+        arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width, HEIGHT - bar_height, max_bar_width, bar_height, arcade.color.BLACK)
+        pass
 
         health_width = player_health / player_max_health * max_bar_width
-        arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width,
-                                          HEIGHT - bar_height,
-                                          health_width,
-                                          bar_height,
-                                          arcade.color.APPLE_GREEN)
 
-        arcade.draw_text(f"{player_health}/{player_max_health}",
-                         WIDTH - max_bar_width,
-                         HEIGHT - bar_height,
-                         arcade.color.WHITE,
-                         font_size=25)
+        arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width, HEIGHT - bar_height, max_bar_width, bar_height, arcade.color.WHITE)
+        if player_health == 100:
+            arcade.draw_xywh_rectangle_filled(health_pos_x, health_pos_y, max_bar_width, bar_height, arcade.color.GREEN)
+            arcade.draw_text("100/100", 500, health_pos_y, arcade.color.BLACK, font_size=20)
+        elif player_health == 75:
+            arcade.draw_xywh_rectangle_filled(health_pos_x, health_pos_y, 130, 40, arcade.color.GREEN_YELLOW)
+            arcade.draw_text("75/100", 500, health_pos_y, arcade.color.BLACK, font_size=20)
+        elif player_health == 50:
+            arcade.draw_xywh_rectangle_filled(health_pos_x, health_pos_y, 85, 40, arcade.color.YELLOW)
+            arcade.draw_text("50/100", 500, health_pos_y, arcade.color.BLACK, font_size=20)
+        elif player_health == 25:
+            arcade.draw_xywh_rectangle_filled(health_pos_x, health_pos_y, 45, 40, arcade.color.RED)
+            arcade.draw_text("25/100", 500, health_pos_y, arcade.color.BLACK, font_size=20)
+
+        if player_health == 0:
+            current_screen = "End"
+
+    elif current_screen == "End":
+        arcade.set_background_color(arcade.color.BLACK)
+        player_alive = False
+        current_score = timer
+        arcade.draw_text("GAME OVER", 40, 375, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
+        arcade.draw_line(40, 360, 600, 360, arcade.color.WHITE, 10)
+        #arcade.draw_text("Press R to return to Main Menu", 60, 210, arcade.color.WHITE, 15, 500, "center", "Veneer", True, False)
+        arcade.draw_text(f"Your Score was {current_score}", 250, 150, arcade.color.WHITE, 20, 800, "left", "arial", True, False)
+        if button_end[BTN_end_IS_CLICKED]:
+            color = button_end[BTN_end_COLOR_CLICKED]
+        else:
+            color = button_end[BTN_end_COLOR]
+
+        arcade.draw_rectangle_filled(320, 240, 126, 40, arcade.color.EARTH_YELLOW)
+        arcade.draw_text("Restart", 170, 225, arcade.color.BLACK, 28, 300, "center", 'arial', True, False)
+
 
 
 def on_key_press(key, modifiers):
-    global current_screen
+    global current_screen, timer
 
-    if current_screen == "game":
+    if current_screen == "instructions":
+        if key == arcade.key.M:
+            current_screen = "menu"
+
+    elif current_screen == "menu":
+       if key == arcade.key.R:
+            current_screen = "End"
+
+    elif current_screen == "game":
         global up_pressed
         if key == arcade.key.W:
             up_pressed = True
@@ -212,9 +367,14 @@ def on_key_press(key, modifiers):
         if key == arcade.key.D:
             right_pressed = True
 
+    elif current_screen == "End":
+        if key == arcade.key.ESCAPE:
+            current_screen == "menu"
+
 
 def on_key_release(key, modifiers):
     global current_screen
+
     if current_screen == "game":
         global up_pressed
         if key == arcade.key.W:
@@ -239,12 +399,40 @@ def on_mouse_press(x, y, button, modifiers):
         if x > 257 and x < 383 and y > 230 and y < 270:
             current_screen = "instructions"
 
+    if current_screen == "game":
+        if x > 0 and x < 60 and y > 420 and y < 480:
+            current_screen = "pause"
+
+    if current_screen == "pause":
+        if x > 245 and x < 420 and y > 220 and y < 270:
+            current_screen = "game"
+        if x > 245 and x < 420 and y > 140 and y < 180:
+            current_screen = "menu"
+
+    if current_screen == "End":
+        if x > 310 and x < 446 and y > 200 and y < 240:
+            current_screen = "menu"
 
 
 def on_mouse_release(x, y, button, modifiers):
     global current_screen
     button2[BTN_2_IS_CLICKED] = False
     button3[BTN_3_IS_CLICKED] = False
+    button_pause[BTN_pause_IS_CLICKED] = False
+    button_pause_screen[BTN_pause_screen_IS_CLICKED] = False
+    button_menu[BTN_menu_IS_CLICKED] = False
+    button_end[BTN_end_IS_CLICKED] = False
+
+
+def pause_screen():
+    if button_pause[BTN_pause_IS_CLICKED]:
+        color = button_pause[BTN_pause_IS_CLICKED]
+    else:
+        color = button_pause[BTN_pause_COLOR]
+
+    arcade.draw_rectangle_filled(20, 460, 40, 40, arcade.color.EARTH_YELLOW)
+    arcade.draw_texture_rectangle(20, 460, 40, 40, pause_img)
+
 
 
 if __name__ == '__main__':
