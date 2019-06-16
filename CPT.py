@@ -217,6 +217,8 @@ def update(delta_time):
         right_pressed = False
 
 
+
+
 def on_draw():
     arcade.start_render()
     global current_screen
@@ -230,7 +232,8 @@ def on_draw():
     y = 325
 
     if current_screen == "menu":
-        arcade.set_background_color(arcade.color.SPACE_CADET)
+        arcade.set_background_color(arcade.color.WHITE)
+        arcade.draw_texture_rectangle(x, y, 1000, 645, game_background)
         if button2[BTN_2_IS_CLICKED]:
             color = button2[BTN_2_COLOR_CLICKED]
         else:
@@ -245,7 +248,10 @@ def on_draw():
         arcade.draw_rectangle_filled(button3[BTN_3_X], button3[BTN_3_Y], button3[BTN_3_WIDTH], button3[BTN_3_HEIGHT], arcade.color.YELLOW)
         arcade.draw_text("INSTRUCTIONS", 170, 245, arcade.color.BLACK, 16, 300, "center", 'arial', True, False)
         arcade.draw_text("START", 165, 310, arcade.color.BLACK, 25, 300, "center", 'arial', True, False)
-        arcade.draw_text("READY, SET, LIFTOFF!", 95, 400, arcade.color.WHITE, 35)
+        arcade.draw_text("READY, SET, LIFTOFF!", 65, 420, arcade.color.RED_ORANGE, 35, 500, "center", 'arial', True, False)
+        arcade.draw_line(90, 410, 550, 410, arcade.color.RED_ORANGE, 8)
+        arcade.draw_texture_rectangle(90, 220, 100, 300, ship_img)
+        arcade.draw_texture_rectangle(520, 220, 100, 300, ship_img)
 
 
     elif current_screen == "instructions":
@@ -262,7 +268,8 @@ def on_draw():
         arcade.draw_text("LEFT", 170, 160, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
         arcade.draw_text("RIGHT", 430, 160, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
         #arcade.draw_text("IN this game, you will be using the keys W to move up, S to move down, A to move left and D to move Right", 60, 320, arcade.color.WHITE, 15, 300, "left", "arial", False, False)
-        arcade.draw_text("Press M to return to Menu", 8, 340, arcade.color.WHITE, 14, 300, "center", "Veneer", True, False)
+        arcade.draw_text("Press M to return to Menu", 5, 320, arcade.color.WHITE, 14, 300, "center", "Veneer", True, False)
+        arcade.draw_text("Try to avoid the asteroids", 5, 280, arcade.color.WHITE, 14, 300, "center", "Veneer", True, False)
 
 
     elif current_screen == "pause":
@@ -328,8 +335,8 @@ def on_draw():
         arcade.set_background_color(arcade.color.BLACK)
         player_alive = False
         current_score = timer
-        arcade.draw_text("GAME OVER", 40, 375, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
-        arcade.draw_line(40, 360, 600, 360, arcade.color.WHITE, 10)
+        arcade.draw_text("GAME OVER", 230, 400, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
+        arcade.draw_line(120, 390, 500, 390, arcade.color.WHITE, 10)
         #arcade.draw_text("Press R to return to Main Menu", 60, 210, arcade.color.WHITE, 15, 500, "center", "Veneer", True, False)
         arcade.draw_text(f"Your Score was {current_score}", 250, 150, arcade.color.WHITE, 20, 800, "left", "arial", True, False)
         if button_end[BTN_end_IS_CLICKED]:
@@ -339,6 +346,9 @@ def on_draw():
 
         arcade.draw_rectangle_filled(320, 240, 126, 40, arcade.color.EARTH_YELLOW)
         arcade.draw_text("Restart", 170, 225, arcade.color.BLACK, 28, 300, "center", 'arial', True, False)
+        arcade.draw_texture_rectangle(90, 210, 100, 290, ship_img)
+        arcade.draw_texture_rectangle(520, 210, 100, 290, ship_img)
+
 
 
 
@@ -372,6 +382,7 @@ def on_key_press(key, modifiers):
             current_screen == "menu"
 
 
+
 def on_key_release(key, modifiers):
     global current_screen
 
@@ -388,6 +399,8 @@ def on_key_release(key, modifiers):
         global right_pressed
         if key == arcade.key.D:
             right_pressed = False
+
+
 
 
 def on_mouse_press(x, y, button, modifiers):
@@ -434,6 +447,6 @@ def pause_screen():
     arcade.draw_texture_rectangle(20, 460, 40, 40, pause_img)
 
 
-
 if __name__ == '__main__':
     setup()
+
