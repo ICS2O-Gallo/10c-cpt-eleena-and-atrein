@@ -18,6 +18,11 @@ ast_x_pos = [100, 200, 300, 400, 350]
 ast_y_pos = [480, 480, 480, 480, 480]
 ast_radius = [50]
 
+# Big Asteroids
+ast_big_x_pos = [200, 300]
+ast_big_y_pos = [480, 480]
+
+
 # Images
 ship_img = arcade.load_texture('images/officialrocket.png')
 ast_img = arcade.load_texture('images/ast.png')
@@ -49,7 +54,7 @@ BTN_3_IS_CLICKED = 4
 BTN_3_COLOR = 5
 BTN_3_COLOR_CLICKED = 6
 
-current_screen = "End"
+current_screen = "menu"
 
 button2 = [WIDTH / 2, 250, 125, 40, False, arcade.color.PURPLE, arcade.color.ELECTRIC_CRIMSON]
 
@@ -86,6 +91,7 @@ def update(delta_time):
     global ast_radius
     global ship_l
     global ship_w
+    global ast_big_y_pos, ast_big_x_pos
 
     if up_pressed == True:
         player_y += 10
@@ -98,15 +104,22 @@ def update(delta_time):
         player_x += 10
 
     for index in range(len(ast_y_pos)):
-        ast_y_pos[index] -= 5
+        ast_y_pos[index] -= 6
 
         if ast_y_pos[index] < 0:
             ast_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
             ast_x_pos[index] = random.randrange(0, WIDTH)
 
-    a = ast_radius[0] - ship_w[0]
-    b = ast_radius[0] - ship_l[0]
-    dist = math.sqrt(a ** 2 + b ** 2)
+    for index in range(len(ast_big_y_pos)):
+        ast_big_y_pos[index] -= 2
+
+        if ast_big_y_pos[index] < 0:
+            ast_big_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
+            ast_big_x_pos[index] = random.randrange(0, WIDTH)
+
+ #   a = ast_radius[0] - ship_w[0]
+  #  b = ast_radius[0] - ship_l[0]
+   # dist = math.sqrt(a ** 2 + b ** 2)
 
 
     #if dist < ast_radius[0] + ship_w[0]:
@@ -122,6 +135,16 @@ def update(delta_time):
             player_health -= 25
             del ast_x_pos[i]
             del ast_y_pos[i]
+
+    for i, (x, y) in enumerate(zip(ast_big_x_pos, ast_big_y_pos)):
+        a = x - player_x
+        b = y - player_y
+        distance = math.sqrt(a ** 2 + b ** 2)
+
+        if distance - 30 - 30 <= 0 and current_screen == "game":
+            player_health -= 25
+            del ast_big_x_pos[i]
+            del ast_big_y_pos[i]
 
 
     #if ship_w == ast_x_pos and ship_l == ast_y_pos:
@@ -159,8 +182,8 @@ def update(delta_time):
 def on_draw():
     arcade.start_render()
     global current_screen
-    global player_x, player_y
-    global player_alive
+    global player_x, player_y, ast_big_y_pos, ast_big_x_pos, ast_x_pos, ast_y_pos
+    global player_alive, player_health
     arcade.start_render()
     # Draw in here...
 
@@ -205,7 +228,9 @@ def on_draw():
 
     elif current_screen == "End":
         arcade.set_background_color(arcade.color.BLACK)
+        player_alive = False
         arcade.draw_text("GAME OVER", 40, 375, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
+        arcade.draw_line(40, 360, 600, 360, arcade.color.WHITE, 10)
         arcade.draw_text("Press R to return to Main Menu", 60, 210, arcade.color.WHITE, 15, 500, "center", "Veneer", True, False)
 
 
@@ -214,7 +239,9 @@ def on_draw():
         arcade.set_background_color(arcade.color.BLACK)
         arcade.draw_texture_rectangle(player_x, player_y, ship_w[0], ship_l[0], ship_img)
         for x, y in zip(ast_x_pos, ast_y_pos):
-            arcade.draw_texture_rectangle(x, y, ast_radius[0], 50,  ast_img)
+            arcade.draw_texture_rectangle(x, y, ast_radius[0], 40,  ast_img)
+        for x, y in zip(ast_big_x_pos, ast_big_y_pos):
+            arcade.draw_texture_rectangle(x, y, ast_radius[0], 80, ast_img)
         max_bar_width = 170
         bar_height = 40
         health_pos_x = WIDTH - max_bar_width
@@ -228,9 +255,6 @@ def on_draw():
         pass
 
         health_width = player_health / player_max_health * max_bar_width
-        # arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width, HEIGHT - bar_height, health_width, bar_height, arcade.color.APPLE_GREEN)
-
-       # arcade.draw_text(f"{player_health}/{player_max_health}", WIDTH - max_bar_width, HEIGHT - bar_height,arcade.color.WHITE, font_size=25)
 
         arcade.draw_xywh_rectangle_filled(WIDTH - max_bar_width, HEIGHT - bar_height, max_bar_width, bar_height, arcade.color.WHITE)
         if player_health == 100:
@@ -258,15 +282,15 @@ def on_key_press(key, modifiers):
         if key == arcade.key.M:
             current_screen = "menu"
 
-    if current_screen == "menu":
+    elif current_screen == "menu":
         if key == arcade.key.R:
             current_screen = "End"
 
-    if current_screen == "End":
+    elif current_screen == "End":
         if key == arcade.key.R:
             current_screen = "menu"
 
-    if current_screen == "game":
+    elif current_screen == "game":
         global up_pressed
         if key == arcade.key.W:
             up_pressed = True
@@ -280,6 +304,7 @@ def on_key_press(key, modifiers):
         if key == arcade.key.D:
             right_pressed = True
 
+ 
 
 def on_key_release(key, modifiers):
     global current_screen
@@ -314,7 +339,7 @@ def on_mouse_release(x, y, button, modifiers):
     global current_screen
     button2[BTN_2_IS_CLICKED] = False
     button3[BTN_3_IS_CLICKED] = False
-    
+
 
 if __name__ == '__main__':
     setup()
