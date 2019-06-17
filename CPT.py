@@ -22,7 +22,7 @@ ast_radius = [50]
 ast_big_x_pos = [200, 300]
 ast_big_y_pos = [480, 480]
 
-# The Score Vaiables
+# The Score Variables
 timer = 0
 current_score = 0
 
@@ -335,7 +335,6 @@ def on_draw():
     # Game Over Screen
     elif current_screen == "End":
         arcade.set_background_color(arcade.color.BLACK)
-        player_alive = False
         current_score = timer
         arcade.draw_text("GAME OVER", 230, 400, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
         arcade.draw_line(120, 390, 500, 390, arcade.color.WHITE, 10)
@@ -350,6 +349,26 @@ def on_draw():
         arcade.draw_text("Restart", 170, 225, arcade.color.BLACK, 28, 300, "center", 'arial', True, False)
         arcade.draw_texture_rectangle(90, 210, 100, 290, ship_img)
         arcade.draw_texture_rectangle(520, 210, 100, 290, ship_img)
+        for i, (x, y) in enumerate(zip(ast_x_pos, ast_y_pos)):
+            a = x - player_x
+            b = y - player_y
+            distance = math.sqrt(a ** 2 + b ** 2)
+
+            if distance - 30 - 70 <= 0 and current_screen == "game":
+                player_health -= 25
+                del ast_x_pos[i]
+                del ast_y_pos[i]
+        for i, (x, y) in enumerate(zip(ast_big_x_pos, ast_big_y_pos)):
+            a = x - player_x
+            b = y - player_y
+            distance = math.sqrt(a ** 2 + b ** 2)
+
+            if distance - 30 - 30 <= 0 and current_screen == "game":
+                player_health -= 25
+                del ast_big_x_pos[i]
+                del ast_big_y_pos[i]
+        player_health = 100
+
 
 
 def on_key_press(key, modifiers):
@@ -438,7 +457,6 @@ def on_mouse_release(x, y, button, modifiers):
     button_pause_screen[BTN_pause_screen_IS_CLICKED] = False
     button_menu[BTN_menu_IS_CLICKED] = False
     button_end[BTN_end_IS_CLICKED] = False
-
 
 
 def pause_screen():
