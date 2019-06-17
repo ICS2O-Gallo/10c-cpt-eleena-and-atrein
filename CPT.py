@@ -22,10 +22,9 @@ ast_radius = [50]
 ast_big_x_pos = [200, 300]
 ast_big_y_pos = [480, 480]
 
+# The Score Vaiables
 timer = 0
 current_score = 0
-high_score = 0
-
 
 # Images
 ship_img = arcade.load_texture('images/officialrocket.png')
@@ -37,16 +36,19 @@ S_key_img = arcade.load_texture('images/S_key.png')
 D_key_img = arcade.load_texture('images/D_key.png')
 pause_img = arcade.load_texture('images/pause.png')
 
-
+# Health Bar Variables
 player_health = 100
 player_max_health = 100
 player_alive = True
 
+# Rocket Ship movements
 up_pressed = False
 down_pressed = False
 left_pressed = False
 right_pressed = False
 
+# The Pause Button on the Game Screen
+button_pause = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
 BTN_pause_X = 0
 BTN_pause_Y = 1
 BTN_pause_WIDTH = 2
@@ -55,6 +57,8 @@ BTN_pause_IS_CLICKED = 4
 BTN_pause_COLOR = 5
 BTN_pause_COLOR_CLICKED = 6
 
+# Pause Screen Button back to the Game Screen
+button_pause_screen = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
 BTN_pause_screen_X = 0
 BTN_pause_screen_Y = 1
 BTN_pause_screen_WIDTH = 2
@@ -63,6 +67,8 @@ BTN_pause_screen_IS_CLICKED = 4
 BTN_pause_screen_COLOR = 5
 BTN_pause_screen_COLOR_CLICKED = 6
 
+# End Screen Button
+button_end = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
 BTN_end_X = 0
 BTN_end_Y = 1
 BTN_end_WIDTH = 2
@@ -71,6 +77,8 @@ BTN_end_IS_CLICKED = 4
 BTN_end_COLOR = 5
 BTN_end_COLOR_CLICKED = 6
 
+# Menu Screen Button on Pause screen
+button_menu = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
 BTN_menu_X = 0
 BTN_menu_Y = 1
 BTN_menu_WIDTH = 2
@@ -79,6 +87,8 @@ BTN_menu_IS_CLICKED = 4
 BTN_menu_COLOR = 5
 BTN_menu_COLOR_CLICKED = 6
 
+# Start Button Variables
+button2 = [WIDTH / 2, 250, 125, 40, False, arcade.color.PURPLE, arcade.color.ELECTRIC_CRIMSON]
 BTN_2_X = 0
 BTN_2_Y = 1
 BTN_2_WIDTH = 2
@@ -87,6 +97,8 @@ BTN_2_IS_CLICKED = 4
 BTN_2_COLOR = 5
 BTN_2_COLOR_CLICKED = 6
 
+# Instructions Button Variables
+button3 = [WIDTH / 2, 325, 125, 40, False, arcade.color.BABY_BLUE_EYES, arcade.color.JADE]
 BTN_3_X = 0
 BTN_3_Y = 1
 BTN_3_WIDTH = 2
@@ -95,19 +107,9 @@ BTN_3_IS_CLICKED = 4
 BTN_3_COLOR = 5
 BTN_3_COLOR_CLICKED = 6
 
+# Screen Variable
 current_screen = "menu"
 
-button_pause = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
-
-button_pause_screen = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
-
-button_end = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
-
-button_menu = [WIDTH / 2, 250, 125, 40, False, arcade.color.GREEN_YELLOW, arcade.color.ELECTRIC_BLUE]
-
-button2 = [WIDTH / 2, 250, 125, 40, False, arcade.color.PURPLE, arcade.color.ELECTRIC_CRIMSON]
-
-button3 = [WIDTH / 2, 325, 125, 40, False, arcade.color.BABY_BLUE_EYES, arcade.color.JADE]
 
 
 def setup():
@@ -135,6 +137,7 @@ def update(delta_time):
     global ast_big_y_pos, ast_big_x_pos
     global timer
 
+    # Player Movement Update
     if up_pressed == True:
         player_y += 10
     if down_pressed == True:
@@ -145,13 +148,13 @@ def update(delta_time):
     if right_pressed == True:
         player_x += 10
 
+    # Asteroids
     for index in range(len(ast_y_pos)):
         ast_y_pos[index] -= 6
 
         if ast_y_pos[index] < 0:
             ast_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
             ast_x_pos[index] = random.randrange(0, WIDTH)
-
     for index in range(len(ast_big_y_pos)):
         ast_big_y_pos[index] -= 2
 
@@ -159,6 +162,7 @@ def update(delta_time):
             ast_big_y_pos[index] = random.randrange(HEIGHT, HEIGHT + 50)
             ast_big_x_pos[index] = random.randrange(0, WIDTH)
 
+    # Asteroid Collisions
     for i, (x, y) in enumerate(zip(ast_x_pos, ast_y_pos)):
         a = x - player_x
         b = y - player_y
@@ -168,7 +172,6 @@ def update(delta_time):
             player_health -= 25
             del ast_x_pos[i]
             del ast_y_pos[i]
-
     for i, (x, y) in enumerate(zip(ast_big_x_pos, ast_big_y_pos)):
         a = x - player_x
         b = y - player_y
@@ -179,7 +182,7 @@ def update(delta_time):
             del ast_big_x_pos[i]
             del ast_big_y_pos[i]
 
-
+    # Score Update
     if current_screen == "game":
         timer += 0.5
 
@@ -195,7 +198,7 @@ def update(delta_time):
     elif current_screen == "pause":
         timer += 0
 
-
+    # Player Health Update
     if player_health == 0:
         player_alive = False
 
@@ -218,19 +221,19 @@ def update(delta_time):
 
 
 
-
 def on_draw():
     arcade.start_render()
     global current_screen
     global player_x, player_y, ast_big_y_pos, ast_big_x_pos, ast_x_pos, ast_y_pos
     global player_alive, player_health
-    global timer
+    global timer, current_score
     arcade.start_render()
     # Draw in here...
 
     x = 180
     y = 325
 
+    # Main Menu
     if current_screen == "menu":
         arcade.set_background_color(arcade.color.WHITE)
         arcade.draw_texture_rectangle(x, y, 1000, 645, game_background)
@@ -253,7 +256,7 @@ def on_draw():
         arcade.draw_texture_rectangle(90, 220, 100, 300, ship_img)
         arcade.draw_texture_rectangle(520, 220, 100, 300, ship_img)
 
-
+    # Instructions Screen
     elif current_screen == "instructions":
         arcade.set_background_color(arcade.color.COOL_BLACK)
         player_alive = True
@@ -267,11 +270,10 @@ def on_draw():
         arcade.draw_text("DOWN", 300, 110, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
         arcade.draw_text("LEFT", 170, 160, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
         arcade.draw_text("RIGHT", 430, 160, arcade.color.WHITE, 30, 200, "left", 'arial', True, False)
-        #arcade.draw_text("IN this game, you will be using the keys W to move up, S to move down, A to move left and D to move Right", 60, 320, arcade.color.WHITE, 15, 300, "left", "arial", False, False)
         arcade.draw_text("Press M to return to Menu", 5, 320, arcade.color.WHITE, 14, 300, "center", "Veneer", True, False)
         arcade.draw_text("Try to avoid the asteroids", 5, 280, arcade.color.WHITE, 14, 300, "center", "Veneer", True, False)
 
-
+    # Pause Screen
     elif current_screen == "pause":
         arcade.set_background_color(arcade.color.BLACK)
         arcade.draw_text("PAUSE", 40, 375, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
@@ -292,8 +294,7 @@ def on_draw():
         arcade.draw_text("Main Menu", 170, 165, arcade.color.BLACK, 20, 300, "center", 'arial', True, False)
         arcade.draw_text(f"Current Score: {timer}", 170, 120, arcade.color.WHITE, 18, 300, "center", 'arial', True, False)
 
-
-
+    # Game Screen
     elif current_screen == "game":
         arcade.draw_texture_rectangle(x, y, 1300, 645, game_background)
         arcade.set_background_color(arcade.color.WHITE)
@@ -331,14 +332,15 @@ def on_draw():
         if player_health == 0:
             current_screen = "End"
 
+    # Game Over Screen
     elif current_screen == "End":
         arcade.set_background_color(arcade.color.BLACK)
         player_alive = False
         current_score = timer
         arcade.draw_text("GAME OVER", 230, 400, arcade.color.WHITE, 50, 800, "left", "Veneer", True, False)
         arcade.draw_line(120, 390, 500, 390, arcade.color.WHITE, 10)
-        #arcade.draw_text("Press R to return to Main Menu", 60, 210, arcade.color.WHITE, 15, 500, "center", "Veneer", True, False)
         arcade.draw_text(f"Your Score was {current_score}", 250, 150, arcade.color.WHITE, 20, 800, "left", "arial", True, False)
+
         if button_end[BTN_end_IS_CLICKED]:
             color = button_end[BTN_end_COLOR_CLICKED]
         else:
@@ -350,19 +352,20 @@ def on_draw():
         arcade.draw_texture_rectangle(520, 210, 100, 290, ship_img)
 
 
-
-
 def on_key_press(key, modifiers):
     global current_screen, timer
 
+    # Instructions Key
     if current_screen == "instructions":
         if key == arcade.key.M:
             current_screen = "menu"
 
+    # Secret Menu Key
     elif current_screen == "menu":
        if key == arcade.key.R:
             current_screen = "End"
 
+    # Game Screen Keys
     elif current_screen == "game":
         global up_pressed
         if key == arcade.key.W:
@@ -377,15 +380,11 @@ def on_key_press(key, modifiers):
         if key == arcade.key.D:
             right_pressed = True
 
-    elif current_screen == "End":
-        if key == arcade.key.ESCAPE:
-            current_screen == "menu"
-
-
 
 def on_key_release(key, modifiers):
     global current_screen
 
+    # Player Movement Key
     if current_screen == "game":
         global up_pressed
         if key == arcade.key.W:
@@ -401,27 +400,29 @@ def on_key_release(key, modifiers):
             right_pressed = False
 
 
-
-
 def on_mouse_press(x, y, button, modifiers):
     global current_screen
 
+    # Menu Screen Buttons
     if current_screen == "menu":
         if x > 257 and x < 383 and y > 305 and y < 345:
             current_screen = "game"
         if x > 257 and x < 383 and y > 230 and y < 270:
             current_screen = "instructions"
 
+    # Pause Button on Game Screen
     if current_screen == "game":
         if x > 0 and x < 60 and y > 420 and y < 480:
             current_screen = "pause"
 
+    # Pause Screen Buttons
     if current_screen == "pause":
         if x > 245 and x < 420 and y > 220 and y < 270:
             current_screen = "game"
         if x > 245 and x < 420 and y > 140 and y < 180:
             current_screen = "menu"
 
+    # End Screen Button
     if current_screen == "End":
         if x > 310 and x < 446 and y > 200 and y < 240:
             current_screen = "menu"
@@ -429,12 +430,15 @@ def on_mouse_press(x, y, button, modifiers):
 
 def on_mouse_release(x, y, button, modifiers):
     global current_screen
+
+    # Button Release
     button2[BTN_2_IS_CLICKED] = False
     button3[BTN_3_IS_CLICKED] = False
     button_pause[BTN_pause_IS_CLICKED] = False
     button_pause_screen[BTN_pause_screen_IS_CLICKED] = False
     button_menu[BTN_menu_IS_CLICKED] = False
     button_end[BTN_end_IS_CLICKED] = False
+
 
 
 def pause_screen():
@@ -449,4 +453,3 @@ def pause_screen():
 
 if __name__ == '__main__':
     setup()
-
