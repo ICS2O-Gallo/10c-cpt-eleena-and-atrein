@@ -3,12 +3,12 @@
 
 ## Info
 
-  Ready, Set, Liftoff is a space game that moves in all directions with the objective of avoiding the asteroids and traveling the longest distance and achieving the highest score. This game was made using Python Arcade on Pycharm.
+  Ready, Set, Liftoff is a space game in which a rocketship that moves in all directions, has the objective of avoiding the soaring asteroids and achieving the highest score by traveling the longest distance. This game was made using Python Arcade on Pycharm.
 
 # Game Instructions
 
 ## Goal
-  The goal is to try to get the highest possible score. The user must move their Rocket Ship to avoid touching any of the obstacles.
+  The goal is to try to get the highest possible score. The user must move their Rocket Ship to avoid touching any of the asteroids. 
   
 ## Controls
 READY, SET, LIFTOFF can be controlled with 4 buttons.
